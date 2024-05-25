@@ -14,12 +14,53 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>
+                commons-lang3
+            </artifactId>
+            <version>3.12.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>18.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.javarush</groupId>
+            <artifactId>desktop-game-engine</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.8.2</version>
+
+        </dependency>
 
     </dependencies>
 
     <build>
+        <resources><resource><directory>${project.build.directory}/dependencies/</directory>
+        <targetPath>lib/</targetPath>
+        </resource></resources>
         <plugins>
-            <!-- Usual compilation -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/StrangeTest.java</exclude>
+                        <exclude>**/StrangeTest*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.4</version>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -37,6 +78,63 @@
                 <configuration>
                     <mainClass>com.javarush.games.racer.RacerGame</mainClass>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <outputDirectory>
+                        ${project.build.directory}/dependencies/
+                    </outputDirectory>
+                    <includeScope>compile</includeScope>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <executions><execution>
+                    <phase>
+                        package
+                    </phase>
+                    <goals>
+                        <goal>
+                            jar
+                        </goal>
+                    </goals>
+                </execution></executions>
+                <configuration>
+                    <!--<includes>
+                        <include>**/lib/*</include>
+                    </includes> -->
+                        <archive>
+                            <manifest>
+                                <addClasspath>true</addClasspath>
+                                <classpathPrefix>lib/</classpathPrefix>
+                                <mainClass>org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader</mainClass>
+                            </manifest>
+                            <manifestEntries>
+                                <Class-Path>./</Class-Path>
+                                <Rsrc-main-class>com.javarush.games.racer.RacerGame</Rsrc-main-class>
+                            </manifestEntries>
+                        </archive>
+
+                </configuration>
+
             </plugin>
         </plugins>
     </build>
